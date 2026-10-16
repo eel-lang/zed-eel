@@ -47,8 +47,8 @@ for a release build):
 
 Then link the binaries (adjust the path):
 
-    ln -s /path/to/ruff-eel/target/release/ruff ~/.local/bin/eel-ruff
-    ln -s /path/to/ruff-eel/target/release/ty   ~/.local/bin/eel-ty
+    ln -s /path/to/ruff-eel/target/release/eel-ruff ~/.local/bin/eel-ruff
+    ln -s /path/to/ruff-eel/target/release/eel-ty   ~/.local/bin/eel-ty
 EOF
 fi
 

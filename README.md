@@ -25,8 +25,8 @@ as downloads). The script prints the build instructions if the binaries are miss
 git clone https://github.com/eel-lang/ruff-eel
 cd ruff-eel && git checkout eel
 cargo build --release -p ruff -p ty
-ln -s "$PWD/target/release/ruff" ~/.local/bin/eel-ruff
-ln -s "$PWD/target/release/ty"   ~/.local/bin/eel-ty
+ln -s "$PWD/target/release/eel-ruff" ~/.local/bin/eel-ruff
+ln -s "$PWD/target/release/eel-ty"   ~/.local/bin/eel-ty
 ```
 
 Supported: x86_64 Linux and macOS.
