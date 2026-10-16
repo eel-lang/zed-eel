@@ -19,10 +19,10 @@ The script does everything (no downloads besides the git repos):
 
 1. Clones the [ruff-eel](https://github.com/eel-lang/ruff-eel) fork and **builds the
    `eel-ruff` and `eel-ty` binaries from source** (release by default, ~25 min on the first
-   run; `EEL_PROFILE=debug` for a faster build).
-2. Symlinks them into `~/.local/bin`.
-3. Clones this extension into `~/.local/share/eelang/zed-eel` and prints the one GUI step
-   (`zed: install dev extension` — Zed compiles the grammar and the extension locally).
+   run; `EEL_PROFILE=debug` for a faster build) and symlinks them into `~/.local/bin`.
+2. Clones this extension, **compiles it** (Rust → wasm via `cargo`, grammar → wasm via
+   wasi-sdk — reused from Zed's cache or downloaded), and **installs it into Zed**
+   (`~/.local/share/zed/extensions/installed/eel`) — no GUI steps.
 
 Requirements: git, cargo (Rust), x86_64 Linux/macOS.
 
