@@ -1,58 +1,56 @@
 #!/bin/sh
-# Installs eelang tooling for Zed in one command:
+# Installs eelang support for Zed (source-only; nothing prebuilt is downloaded):
 #   curl -fsSL https://raw.githubusercontent.com/eel-lang/zed-eel/main/install.sh | sh
 #
-# Installs:
-#   1. eel-ruff — the eel-aware ruff fork (linting + formatting)   -> ~/.local/bin
-#   2. eel-ty   — the eel-aware ty fork (type checking + completions) -> ~/.local/bin
-#   3. the eel Zed extension (grammar + language servers)          -> Zed's extensions dir
+# 1. Clones the eel Zed extension into ~/.local/share/eelang/zed-eel.
+# 2. Prints the one GUI step to enable it (Zed compiles the extension locally).
+# 3. Checks for eel-ruff/eel-ty; if missing, prints the build instructions for the
+#    ruff-eel fork (currently built for x86_64 Linux/macOS).
 set -eu
 
-VERSION="${EEL_VERSION:-v0.1.0}"
-BASE_URL="${EEL_BASE_URL:-https://github.com/eel-lang}"
-
-# --- platform detection -----------------------------------------------------
-OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-ARCH=$(uname -m)
-case "$OS-$ARCH" in
-    linux-x86_64)            TARGET="linux-x86_64" ;;
-    linux-aarch64|linux-arm64) TARGET="linux-aarch64" ;;
-    darwin-x86_64)           TARGET="macos-x86_64" ;;
-    darwin-arm64)            TARGET="macos-aarch64" ;;
-    *) echo "eelang: unsupported platform: $OS-$ARCH" >&2; exit 1 ;;
-esac
-
-# --- binaries ---------------------------------------------------------------
+EXT_DIR="${EEL_EXT_DIR:-$HOME/.local/share/eelang/zed-eel}"
 BIN_DIR="${EEL_BIN_DIR:-$HOME/.local/bin}"
-mkdir -p "$BIN_DIR"
 
-echo "eelang: installing eel-ruff and eel-ty into $BIN_DIR"
-curl -fsSL -o "$BIN_DIR/eel-ruff" "$BASE_URL/ruff-eel/releases/download/$VERSION/ruff-$TARGET"
-chmod +x "$BIN_DIR/eel-ruff"
-curl -fsSL -o "$BIN_DIR/eel-ty"   "$BASE_URL/ruff-eel/releases/download/$VERSION/ty-$TARGET"
-chmod +x "$BIN_DIR/eel-ty"
-
-# --- Zed extension ----------------------------------------------------------
-case "$OS" in
-    linux) ZED_EXTENSIONS_DIR="${ZED_EXTENSIONS_DIR:-$HOME/.local/share/zed/extensions/installed}" ;;
-    darwin) ZED_EXTENSIONS_DIR="${ZED_EXTENSIONS_DIR:-$HOME/Library/Application Support/Zed/extensions/installed}" ;;
-esac
-EXT_DIR="$ZED_EXTENSIONS_DIR/eel"
-
-echo "eelang: installing the Zed extension into $EXT_DIR"
-# Remove a dev-extension symlink, if present, so the archive extracts into a real dir.
-if [ -L "$EXT_DIR" ]; then
-    rm -f "$EXT_DIR"
+echo "eelang: fetching the Zed extension into $EXT_DIR"
+if [ -d "$EXT_DIR/.git" ]; then
+    git -C "$EXT_DIR" pull --ff-only
+else
+    git clone --depth 1 https://github.com/eel-lang/zed-eel "$EXT_DIR"
 fi
-mkdir -p "$EXT_DIR"
-TMP=$(mktemp -d)
-trap 'rm -rf "$TMP"' EXIT
-curl -fsSL -o "$TMP/eel-extension.tgz" "$BASE_URL/zed-eel/releases/download/$VERSION/eel-extension.tgz"
-tar -xzf "$TMP/eel-extension.tgz" -C "$EXT_DIR"
 
 echo
-echo "eelang: done."
-echo "  * binaries:   $BIN_DIR/eel-ruff, $BIN_DIR/eel-ty"
-echo "  * extension:  $EXT_DIR"
+echo "eelang: enable the extension in Zed:"
+echo "  zed: install dev extension  ->  select  $EXT_DIR"
+echo "  (Zed compiles the grammar and the extension locally; nothing to build here.)"
 echo
-echo "Restart Zed and open a .eel file — highlighting, linting, and completions should work."
+
+missing=0
+for bin in eel-ruff eel-ty; do
+    if command -v "$bin" >/dev/null 2>&1 || [ -x "$BIN_DIR/$bin" ]; then
+        echo "  * $bin: found"
+    else
+        echo "  * $bin: MISSING"
+        missing=1
+    fi
+done
+
+if [ "$missing" -eq 1 ]; then
+    cat <<'EOF'
+
+The eel-aware ruff and ty provide linting/formatting and type-aware
+completions. They are built from source (x86_64 Linux or macOS, ~25 min
+for a release build):
+
+    git clone https://github.com/eel-lang/ruff-eel
+    cd ruff-eel && git checkout eel
+    cargo build --release -p ruff -p ty
+
+Then link the binaries (adjust the path):
+
+    ln -s /path/to/ruff-eel/target/release/ruff ~/.local/bin/eel-ruff
+    ln -s /path/to/ruff-eel/target/release/ty   ~/.local/bin/eel-ty
+EOF
+fi
+
+echo
+echo "eelang: done. Restart Zed and open a .eel file."
