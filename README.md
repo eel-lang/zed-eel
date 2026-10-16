@@ -15,11 +15,23 @@ with assert-patterns, `match def`, and pipelines.
 curl -fsSL https://raw.githubusercontent.com/eel-lang/zed-eel/main/install.sh | sh
 ```
 
-The script clones this extension and tells you the one GUI step (`zed: install dev extension`).
-Zed compiles the grammar and the extension locally.
+The script does everything (no downloads besides the git repos):
 
-The `eel-ruff` and `eel-ty` binaries are **built from source** (they are not distributed
-as downloads). The script prints the build instructions if the binaries are missing — in short:
+1. Clones the [ruff-eel](https://github.com/eel-lang/ruff-eel) fork and **builds the
+   `eel-ruff` and `eel-ty` binaries from source** (release by default, ~25 min on the first
+   run; `EEL_PROFILE=debug` for a faster build).
+2. Symlinks them into `~/.local/bin`.
+3. Clones this extension into `~/.local/share/eelang/zed-eel` and prints the one GUI step
+   (`zed: install dev extension` — Zed compiles the grammar and the extension locally).
+
+Requirements: git, cargo (Rust), x86_64 Linux/macOS.
+
+The extension looks up `eel-ruff` (fallback `ruff`) and `eel-ty` (fallback `ty`), so a stock
+`ruff`/`ty` installed for Python files is not shadowed.
+
+### Manual build
+
+If you prefer to build by hand:
 
 ```bash
 git clone https://github.com/eel-lang/ruff-eel
@@ -28,11 +40,6 @@ cargo build --release -p ruff -p ty
 ln -s "$PWD/target/release/eel-ruff" ~/.local/bin/eel-ruff
 ln -s "$PWD/target/release/eel-ty"   ~/.local/bin/eel-ty
 ```
-
-Supported: x86_64 Linux and macOS.
-
-The extension looks up `eel-ruff` (fallback `ruff`) and `eel-ty` (fallback `ty`), so a stock
-`ruff`/`ty` installed for Python files is not shadowed.
 
 ## Development
 
