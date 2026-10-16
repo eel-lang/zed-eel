@@ -1,0 +1,14 @@
+(decorator) @annotation
+
+(class_definition
+  "class" @context
+  name: (identifier) @name) @item
+
+(function_definition
+  "async"? @context
+  "def" @context
+  name: (_) @name) @item
+
+(match_statement
+  "def" @context
+  name: (identifier) @name) @item

@@ -1,0 +1,8 @@
+target/
+Cargo.lock
+# Zed checkout and compiled artifacts (created at install time)
+grammars/eel/
+grammars/eel.wasm
+extension.wasm
+# Local dev copy of the grammar source (lives in its own repository)
+grammars/tree-sitter-eel/

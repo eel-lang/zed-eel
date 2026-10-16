@@ -1,0 +1,26 @@
+id = "eel"
+name = "eelang"
+description = "eelang language support: a superset of Python with assert-patterns, match def, and pipelines. Linting and formatting via the eel-aware ruff language server."
+version = "0.1.0"
+schema_version = 1
+authors = ["pwtail"]
+repository = "https://github.com/eel-lang/zed-eel"
+snippets = ["./snippets/eelang.json"]
+
+[grammars.eel]
+repository = "https://github.com/eel-lang/tree-sitter-eel"
+commit = "e6ee6e77879a415338914b8a283ba85de1647042"
+
+[language_servers.eel]
+name = "eelang LSP"
+language = "eelang"
+
+[language_servers.eel.language_ids]
+"eelang" = "eel"
+
+[language_servers.eel-ty]
+name = "eelang ty LSP"
+language = "eelang"
+
+[language_servers.eel-ty.language_ids]
+"eelang" = "python"
