@@ -21,10 +21,12 @@ The script does everything (no downloads besides the git repos):
    `eel-ruff` and `eel-ty` binaries from source** (release by default, ~25 min on the first
    run; `EEL_PROFILE=debug` for a faster build) and symlinks them into `~/.local/bin`.
 2. Clones this extension, **compiles it** (Rust → wasm via `cargo`, grammar → wasm via
-   wasi-sdk — reused from Zed's cache or downloaded), and **installs it into Zed**
-   (`~/.local/share/zed/extensions/installed/eel`) — no GUI steps.
+   wasi-sdk — reused from Zed's cache or downloaded), and **installs it directly into Zed**
+   (`~/.local/share/zed/extensions/installed/eel`) — no GUI steps; the extension appears in
+   Zed right after the script finishes (restart Zed to be safe).
 
-Requirements: git, cargo (Rust), x86_64 Linux/macOS.
+**Requirements:** [Rust with cargo](https://rustup.rs) and git. Supported platforms:
+x86_64 Linux and macOS.
 
 The extension looks up `eel-ruff` (fallback `ruff`) and `eel-ty` (fallback `ty`), so a stock
 `ruff`/`ty` installed for Python files is not shadowed.
