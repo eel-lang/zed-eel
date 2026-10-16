@@ -9,7 +9,7 @@
 set -eu
 
 VERSION="${EEL_VERSION:-v0.1.0}"
-BASE_URL="https://github.com/eel-lang"
+BASE_URL="${EEL_BASE_URL:-https://github.com/eel-lang}"
 
 # --- platform detection -----------------------------------------------------
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
